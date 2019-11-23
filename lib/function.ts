@@ -43,10 +43,6 @@ export const sdm = async (pubSubEvent: PubSubMessage, context: any) => {
     const cfg = await prepareConfiguration(payload);
     const client = automationClient(cfg, RequestProcessMaker);
     await client.run();
-    // Remove the startup listeners
-    if ((client as any).defaultListeners.length > 2) {
-        (client as any).defaultListeners.splice(2);
-    }
 
     if (isCommandIncoming(payload)) {
         try {
