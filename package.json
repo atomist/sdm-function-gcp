@@ -26,7 +26,7 @@
   "dependencies": {
     "@atomist/automation-client": "1.8.0-dynamic-goals.20191123160218",
     "@atomist/sdm": "1.8.0-dynamic-goals.20191120223639",
-    "@atomist/sdm-core": "1.8.0-dynamic-goals.20191123200645",
+    "@atomist/sdm-core": "1.8.0-dynamic-goals.20191123202121",
     "@atomist/slack-messages": "^1.1.1",
     "@google-cloud/pubsub": "^1.1.5",
     "lodash": "^4.17.15"
