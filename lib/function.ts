@@ -43,6 +43,10 @@ export const sdm = async (pubSubEvent: PubSubMessage, context: any) => {
     const cfg = await prepareConfiguration(payload);
     const client = automationClient(cfg, RequestProcessMaker);
     await client.run();
+    // Remove the startup listeners
+    if ((client as any).defaultListeners.length > 2) {
+        (client as any).defaultListeners.splice(2);
+    }
 
     if (isCommandIncoming(payload)) {
         try {
@@ -82,6 +86,7 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
     _.set(baseCfg, "ws.enabled", false);
     _.set(baseCfg, "sdm.extensionPacks", []);
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
+    _.set(baseCfg, "logging.level", "debug");
 
     const apiKeySecret = event.secrets.find(s => s.uri === "atomist://apiKey");
     baseCfg.apiKey = apiKeySecret?.value;
