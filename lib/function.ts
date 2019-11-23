@@ -32,13 +32,15 @@ import * as _ from "lodash";
 import * as path from "path";
 import { RequestProcessMaker } from "./support/requestProcessor";
 
+type PubSubMessage = { message: { data: string } };
+
 const ProjectLoader = new CachingProjectLoader();
 
-export const sdm = async (pubSubEvent: any, context: any) => {
+export const sdm = async (pubSubEvent: PubSubMessage, context: any) => {
     const payload: CommandIncoming | EventIncoming =
         JSON.parse(Buffer.from(pubSubEvent.message.data, "base64").toString());
 
-    const cfg = await prepareConfiguration();
+    const cfg = await prepareConfiguration(payload);
     const client = automationClient(cfg, RequestProcessMaker);
     await client.run();
 
@@ -71,13 +73,18 @@ export const sdm = async (pubSubEvent: any, context: any) => {
     }
 };
 
-async function prepareConfiguration(): Promise<Configuration> {
+async function prepareConfiguration(event: CommandIncoming | EventIncoming): Promise<Configuration> {
     const baseCfg = await configureYaml(
         "*.yaml",
-        { cwd: path.resolve(__dirname, "..", "..", "..", "..")}) as any;
+        { cwd: path.resolve(__dirname, "..", "..", "..", "..") }) as any;
+
     _.set(baseCfg, "http.enabled", false);
     _.set(baseCfg, "ws.enabled", false);
     _.set(baseCfg, "sdm.extensionPacks", []);
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
+
+    const apiKeySecret = event.secrets.find(s => s.uri === "atomist://apiKey");
+    _.set(baseCfg, "apiKey", apiKeySecret?.value);
+
     return loadConfiguration(baseCfg);
 }
