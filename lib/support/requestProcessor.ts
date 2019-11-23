@@ -27,7 +27,7 @@ export const RequestProcessMaker = (automations, configuration, listeners) =>
 
 class PubSubRequestProcessor extends AbstractRequestProcessor {
 
-    private graphClients: GraphClientFactory;
+    private readonly graphClients: GraphClientFactory;
     private publisher: PubSubPublisher & MessageClient;
 
     constructor(protected automations: AutomationServer,
