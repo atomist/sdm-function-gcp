@@ -76,7 +76,7 @@ export const sdm = async (pubSubEvent: PubSubMessage, context: any) => {
 async function prepareConfiguration(event: CommandIncoming | EventIncoming): Promise<Configuration> {
     const baseCfg = await configureYaml(
         "*.yaml",
-        { cwd: path.resolve(__dirname, "..", "..", "..", "..") }) as any;
+        { cwd: path.resolve(__dirname, "..", "..", "..", "..") });
 
     _.set(baseCfg, "http.enabled", false);
     _.set(baseCfg, "ws.enabled", false);
@@ -84,7 +84,8 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
 
     const apiKeySecret = event.secrets.find(s => s.uri === "atomist://apiKey");
-    _.set(baseCfg, "apiKey", apiKeySecret?.value);
+    baseCfg.apiKey = apiKeySecret?.value;
+    baseCfg.groups = ["function"];
 
     return loadConfiguration(baseCfg);
 }
