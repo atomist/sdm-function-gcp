@@ -13,6 +13,7 @@ import {
 import { CachingProjectLoader } from "@atomist/sdm";
 import { configureYaml } from "@atomist/sdm-core";
 import * as _ from "lodash";
+import * as path from "path";
 import { RequestProcessMaker } from "./support/requestProcessor";
 
 const ProjectLoader = new CachingProjectLoader();
@@ -55,7 +56,9 @@ export const sdm = async (pubSubEvent: any, context: any) => {
 };
 
 async function prepareConfiguration(): Promise<Configuration> {
-    const baseCfg = await configureYaml("*.yaml") as any;
+    const baseCfg = await configureYaml(
+        "*.yaml",
+        { cwd: path.resolve(__dirname, "..", "..", "..", "..")}) as any;
     _.set(baseCfg, "http.enabled", false);
     _.set(baseCfg, "ws.enabled", false);
     _.set(baseCfg, "sdm.extensionPacks", []);
