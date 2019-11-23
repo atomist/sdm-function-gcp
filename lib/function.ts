@@ -87,5 +87,5 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
     baseCfg.apiKey = apiKeySecret?.value;
     baseCfg.groups = ["function"];
 
-    return loadConfiguration(baseCfg);
+    return loadConfiguration(Promise.resolve(baseCfg));
 }
