@@ -32,7 +32,7 @@ import * as _ from "lodash";
 import * as path from "path";
 import { RequestProcessMaker } from "./support/requestProcessor";
 
-interface PubSubMessage { message: { data: string } }
+interface PubSubMessage { message: { data: string }; }
 
 const ProjectLoader = new CachingProjectLoader();
 
