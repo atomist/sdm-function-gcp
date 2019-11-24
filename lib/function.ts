@@ -32,13 +32,13 @@ import * as _ from "lodash";
 import * as path from "path";
 import { RequestProcessMaker } from "./support/requestProcessor";
 
-interface PubSubMessage { message: { data: string }; }
+interface PubSubMessage { data: string; }
 
 const ProjectLoader = new CachingProjectLoader();
 
 export const sdm = async (pubSubEvent: PubSubMessage, context: any) => {
     const payload: CommandIncoming | EventIncoming =
-        JSON.parse(Buffer.from(pubSubEvent.message.data, "base64").toString());
+        JSON.parse(Buffer.from(pubSubEvent.data, "base64").toString());
 
     const cfg = await prepareConfiguration(payload);
     const client = automationClient(cfg, RequestProcessMaker);
