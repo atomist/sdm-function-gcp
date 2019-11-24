@@ -10,7 +10,6 @@ import { AbstractMessageClient } from "@atomist/automation-client/lib/internal/t
 import { Source } from "@atomist/automation-client/src/lib/internal/transport/RequestProcessor";
 import { SlackMessage } from "@atomist/slack-messages";
 import { PubSub } from "@google-cloud/pubsub";
-import { Error } from "tslint/lib/error";
 
 export interface PubSubPublisher {
     publish(message: any): Promise<void>;
