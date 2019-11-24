@@ -36,12 +36,13 @@ interface PubSubMessage { data: string; }
 
 const ProjectLoader = new CachingProjectLoader();
 
-export const sdm = async (pubSubEvent: PubSubMessage, context: any) => {
+export const sdm = async (pubSubEvent: PubSubMessage) => {
     const payload: CommandIncoming | EventIncoming =
         JSON.parse(Buffer.from(pubSubEvent.data, "base64").toString());
 
     const cfg = await prepareConfiguration(payload);
     const client = automationClient(cfg, RequestProcessMaker);
+    (client as any).defaultListeners.splice(1);
     await client.run();
 
     if (isCommandIncoming(payload)) {
