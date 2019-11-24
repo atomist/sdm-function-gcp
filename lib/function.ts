@@ -73,6 +73,8 @@ export const sdm = async (pubSubEvent: PubSubMessage, context: any) => {
     }
 };
 
+export const eventhandler = sdm;
+
 async function prepareConfiguration(event: CommandIncoming | EventIncoming): Promise<Configuration> {
     const baseCfg = await configureYaml(
         "*.yaml",
