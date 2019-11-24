@@ -53,7 +53,7 @@ abstract class AbstractPubSubMessageClient extends AbstractMessageClient impleme
         const topic = this.pubsub.topic(process.env.TOPIC);
         const messageObject = {
             data: {
-                message: response,
+                message: JSON.stringify(response),
             },
         };
         const messageBuffer = Buffer.from(JSON.stringify(messageObject), "utf8");
