@@ -49,11 +49,11 @@ abstract class AbstractPubSubMessageClient extends AbstractMessageClient impleme
         return this.sendResponse(message);
     }
 
-    public async sendResponse(response: any): Promise<void> {
+    public async sendResponse(message: any): Promise<void> {
         const topic = this.pubsub.topic(process.env.TOPIC);
         const messageObject = {
             data: {
-                message: JSON.stringify(response),
+                message,
             },
         };
         const messageBuffer = Buffer.from(JSON.stringify(messageObject), "utf8");
