@@ -84,7 +84,7 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
     _.set(baseCfg, "logging.level", "debug");
 
-    const apiKeySecret = event.secrets.find(s => s.uri === "atomist://apiKey");
+    const apiKeySecret = event.secrets.find(s => s.uri === "atomist://api-key");
     baseCfg.apiKey = apiKeySecret?.value;
     baseCfg.groups = ["function"];
 
