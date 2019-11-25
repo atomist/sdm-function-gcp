@@ -28,7 +28,8 @@
     "@google-cloud/pubsub": "^1.1.5",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "source-map-support": "^0.5.16"
   },
   "peerDependencies": {
     "@atomist/automation-client": "^1.8.0",

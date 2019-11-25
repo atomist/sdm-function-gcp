@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// tslint:disable-next-line:no-import-side-effect
+import "source-map-support/register";
+
 import { listen } from "../lib/http";
 
 listen(+(process.env.PORT || 8080));
