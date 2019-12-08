@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// tslint:disable-next-line:no-import-side-effect
-import "source-map-support/register";
-
 import {
     CommandIncoming,
     Configuration,
@@ -34,11 +31,16 @@ import {
     configureYaml,
     githubGoalStatusSupport,
 } from "@atomist/sdm-core";
+import { gcpSupport } from "@atomist/sdm-pack-gcp";
 import * as _ from "lodash";
 import * as path from "path";
+// tslint:disable-next-line:no-import-side-effect
+import "source-map-support/register";
 import { RequestProcessMaker } from "./support/requestProcessor";
 
-interface PubSubMessage { data: string; }
+interface PubSubMessage {
+    data: string;
+}
 
 const ProjectLoader = new CachingProjectLoader();
 
@@ -87,14 +89,24 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
         "*.yaml",
         { cwd: path.resolve(__dirname, "..", "..", "..", "..") });
 
+    const bucket = process.env.STORAGE?.replace(/gs:\/\//g, "");
+
     _.set(baseCfg, "http.enabled", false);
     _.set(baseCfg, "ws.enabled", false);
-    _.set(baseCfg, "sdm.extensionPacks", [githubGoalStatusSupport()]);
+    _.set(baseCfg, "sdm.extensionPacks", [
+        githubGoalStatusSupport(),
+        ...(!!bucket ? [gcpSupport()] : []),
+    ]);
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
     _.set(baseCfg, "logging.level", "debug");
     _.set(baseCfg, "logging.level", "debug");
     _.set(baseCfg, "logging.color", false);
     _.set(baseCfg, "cluster.enabled", false);
+    _.set(baseCfg, "sdm.cache", {
+        enabled: true,
+        bucket,
+        path: !!bucket ? "function" : "/tmp/sdm",
+    });
 
     const apiKeySecret = event.secrets.find(s => s.uri === "atomist://api-key");
     baseCfg.apiKey = apiKeySecret?.value;
