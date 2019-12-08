@@ -30,7 +30,10 @@ import {
     isEventIncoming,
 } from "@atomist/automation-client/lib/internal/transport/RequestProcessor";
 import { CachingProjectLoader } from "@atomist/sdm";
-import { configureYaml } from "@atomist/sdm-core";
+import {
+    configureYaml,
+    githubGoalStatusSupport,
+} from "@atomist/sdm-core";
 import * as _ from "lodash";
 import * as path from "path";
 import { RequestProcessMaker } from "./support/requestProcessor";
@@ -86,14 +89,21 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
 
     _.set(baseCfg, "http.enabled", false);
     _.set(baseCfg, "ws.enabled", false);
-    _.set(baseCfg, "sdm.extensionPacks", []);
+    _.set(baseCfg, "sdm.extensionPacks", [githubGoalStatusSupport()]);
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
     _.set(baseCfg, "logging.level", "debug");
+    _.set(baseCfg, "logging.level", "debug");
+    _.set(baseCfg, "logging.color", false);
     _.set(baseCfg, "cluster.enabled", false);
 
     const apiKeySecret = event.secrets.find(s => s.uri === "atomist://api-key");
     baseCfg.apiKey = apiKeySecret?.value;
-    baseCfg.groups = ["function"];
+
+    if (isCommandIncoming(event)) {
+        baseCfg.workspaceIds = [event.team.id];
+    } else if (isEventIncoming(event)) {
+        baseCfg.workspaceIds = [event.extensions.team_id];
+    }
 
     return loadConfiguration(Promise.resolve(baseCfg));
 }
