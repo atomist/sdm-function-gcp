@@ -105,7 +105,7 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
     _.set(baseCfg, "sdm.cache", {
         enabled: true,
         bucket,
-        path: !!bucket ? "function" : "/tmp/sdm",
+        path: !bucket ? "/tmp/sdm" : undefined,
     });
 
     const apiKeySecret = event.secrets.find(s => s.uri === "atomist://api-key");
