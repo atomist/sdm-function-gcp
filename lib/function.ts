@@ -99,7 +99,6 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
     ]);
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
     _.set(baseCfg, "logging.level", "debug");
-    _.set(baseCfg, "logging.level", "debug");
     _.set(baseCfg, "logging.color", false);
     _.set(baseCfg, "cluster.enabled", false);
     _.set(baseCfg, "sdm.cache", {
