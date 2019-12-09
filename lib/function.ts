@@ -97,7 +97,9 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
     }
 
     // For now, let's set the storage bucket
-    process.env.STORAGE = `gs://workspace-storage-${workspaceId.toLowerCase()}`;
+    if (!process.env.STORAGE) {
+        process.env.STORAGE = `gs://workspace-storage-${workspaceId.toLowerCase()}`;
+    }
 
     const bucket = process.env.STORAGE?.replace(/gs:\/\//g, "");
 
