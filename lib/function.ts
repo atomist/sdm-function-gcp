@@ -89,6 +89,16 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
         "*.yaml",
         { cwd: path.resolve(__dirname, "..", "..", "..", "..") });
 
+    let workspaceId;
+    if (isCommandIncoming(event)) {
+        workspaceId = event.team.id;
+    } else if (isEventIncoming(event)) {
+        workspaceId = event.extensions.team_id;
+    }
+
+    // For now, let's set the storage bucket
+    process.env.STORAGE = `gs://workspace-storage-${workspaceId}`;
+
     const bucket = process.env.STORAGE?.replace(/gs:\/\//g, "");
 
     _.set(baseCfg, "http.enabled", false);
@@ -111,12 +121,7 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
 
     const apiKeySecret = event.secrets.find(s => s.uri === "atomist://api-key");
     baseCfg.apiKey = apiKeySecret?.value;
-
-    if (isCommandIncoming(event)) {
-        baseCfg.workspaceIds = [event.team.id];
-    } else if (isEventIncoming(event)) {
-        baseCfg.workspaceIds = [event.extensions.team_id];
-    }
+    baseCfg.workspaceIds = [workspaceId];
 
     return loadConfiguration(Promise.resolve(baseCfg));
 }
