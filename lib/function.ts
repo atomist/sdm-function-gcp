@@ -101,7 +101,7 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
         process.env.STORAGE = `gs://workspace-storage-${workspaceId.toLowerCase()}`;
     }
 
-    const bucket = process.env.STORAGE?.replace(/gs:\/\//g, "");
+    const bucket = process.env.STORAGE?.toLowerCase().replace(/gs:\/\//g, "");
 
     _.set(baseCfg, "http.enabled", false);
     _.set(baseCfg, "ws.enabled", false);
