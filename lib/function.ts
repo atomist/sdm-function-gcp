@@ -93,14 +93,16 @@ async function prepareConfiguration(event: CommandIncoming | EventIncoming): Pro
 
     _.set(baseCfg, "http.enabled", false);
     _.set(baseCfg, "ws.enabled", false);
+    _.set(baseCfg, "logging.level", "debug");
+    _.set(baseCfg, "logging.color", false);
+    _.set(baseCfg, "cluster.enabled", false);
+
     _.set(baseCfg, "sdm.extensionPacks", [
         githubGoalStatusSupport(),
         ...(!!bucket ? [gcpSupport()] : []),
     ]);
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
-    _.set(baseCfg, "logging.level", "debug");
-    _.set(baseCfg, "logging.color", false);
-    _.set(baseCfg, "cluster.enabled", false);
+    _.set(baseCfg, "sdm.goal.timeout", 1200000);
     _.set(baseCfg, "sdm.cache", {
         enabled: true,
         bucket,
