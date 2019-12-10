@@ -14,41 +14,46 @@
  * limitations under the License.
  */
 
+// tslint:disable-next-line:no-import-side-effect
+import "source-map-support/register";
+
 import {
     CommandIncoming,
-    Configuration,
     EventIncoming,
     logger,
 } from "@atomist/automation-client";
 import { automationClient } from "@atomist/automation-client/lib/automationClient";
-import { loadConfiguration } from "@atomist/automation-client/lib/configuration";
 import {
     isCommandIncoming,
     isEventIncoming,
 } from "@atomist/automation-client/lib/internal/transport/RequestProcessor";
-import { CachingProjectLoader } from "@atomist/sdm";
-import {
-    configureYaml,
-    githubGoalStatusSupport,
-} from "@atomist/sdm-core";
-import { gcpSupport } from "@atomist/sdm-pack-gcp";
-import * as _ from "lodash";
-import * as path from "path";
-// tslint:disable-next-line:no-import-side-effect
-import "source-map-support/register";
+import { prepareConfiguration } from "./support/configuration";
+import { handlePubSubMessage } from "./support/pubSubMessage";
 import { RequestProcessMaker } from "./support/requestProcessor";
 
 interface PubSubMessage {
     data: string;
 }
 
-const ProjectLoader = new CachingProjectLoader();
-
 export const sdm = async (pubSubEvent: PubSubMessage) => {
     const payload: CommandIncoming | EventIncoming =
         JSON.parse(Buffer.from(pubSubEvent.data, "base64").toString());
 
-    const cfg = await prepareConfiguration(payload);
+    // pub/sub message that we need to handle
+    if (!isCommandIncoming(payload) && !isEventIncoming(payload)) {
+        return handlePubSubMessage(payload);
+    }
+
+    const apiKey = payload?.secrets?.find(s => s.uri === "atomist://api-key");
+
+    let workspaceId;
+    if (isCommandIncoming(payload)) {
+        workspaceId = payload.team.id;
+    } else if (isEventIncoming(payload)) {
+        workspaceId = payload.extensions.team_id;
+    }
+
+    const cfg = await prepareConfiguration(workspaceId, apiKey?.value);
     const client = automationClient(cfg, RequestProcessMaker);
     (client as any).defaultListeners.splice(1);
     await client.run();
@@ -84,46 +89,3 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
 
 export const eventhandler = sdm;
 
-async function prepareConfiguration(event: CommandIncoming | EventIncoming): Promise<Configuration> {
-    const baseCfg = await configureYaml(
-        "*.yaml",
-        { cwd: path.resolve(__dirname, "..", "..", "..", "..") });
-
-    let workspaceId;
-    if (isCommandIncoming(event)) {
-        workspaceId = event.team.id;
-    } else if (isEventIncoming(event)) {
-        workspaceId = event.extensions.team_id;
-    }
-
-    // For now, let's set the storage bucket
-    if (!process.env.STORAGE) {
-        process.env.STORAGE = `gs://workspace-storage-${workspaceId.toLowerCase()}`;
-    }
-
-    const bucket = process.env.STORAGE?.toLowerCase().replace(/gs:\/\//g, "");
-
-    _.set(baseCfg, "http.enabled", false);
-    _.set(baseCfg, "ws.enabled", false);
-    _.set(baseCfg, "logging.level", "debug");
-    _.set(baseCfg, "logging.color", false);
-    _.set(baseCfg, "cluster.enabled", false);
-
-    _.set(baseCfg, "sdm.extensionPacks", [
-        githubGoalStatusSupport(),
-        ...(!!bucket ? [gcpSupport()] : []),
-    ]);
-    _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
-    _.set(baseCfg, "sdm.goal.timeout", 1200000);
-    _.set(baseCfg, "sdm.cache", {
-        enabled: true,
-        bucket,
-        path: !bucket ? "/tmp/sdm" : undefined,
-    });
-
-    const apiKeySecret = event.secrets.find(s => s.uri === "atomist://api-key");
-    baseCfg.apiKey = apiKeySecret?.value;
-    baseCfg.workspaceIds = [workspaceId];
-
-    return loadConfiguration(Promise.resolve(baseCfg));
-}
