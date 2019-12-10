@@ -88,4 +88,3 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
 };
 
 export const eventhandler = sdm;
-
