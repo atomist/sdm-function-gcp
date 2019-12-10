@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// tslint:disable-next-line:no-import-side-effect
-import "source-map-support/register";
-
 import {
     CommandIncoming,
     EventIncoming,
@@ -27,6 +24,9 @@ import {
     isCommandIncoming,
     isEventIncoming,
 } from "@atomist/automation-client/lib/internal/transport/RequestProcessor";
+import { replacer } from "@atomist/automation-client/lib/internal/util/string";
+// tslint:disable-next-line:no-import-side-effect
+import "source-map-support/register";
 import { prepareConfiguration } from "./support/configuration";
 import { handlePubSubMessage } from "./support/pubSubMessage";
 import { RequestProcessMaker } from "./support/requestProcessor";
@@ -38,6 +38,8 @@ interface PubSubMessage {
 export const sdm = async (pubSubEvent: PubSubMessage) => {
     const payload: CommandIncoming | EventIncoming =
         JSON.parse(Buffer.from(pubSubEvent.data, "base64").toString());
+
+    logger.info(`Incoming pub/sub message: ${JSON.stringify(payload, replacer)}`);
 
     // pub/sub message that we need to handle
     if (!isCommandIncoming(payload) && !isEventIncoming(payload)) {
