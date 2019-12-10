@@ -18,6 +18,7 @@ import {
     AutomationContextAware,
     guid,
     HandlerContext,
+    logger,
     QueryNoCacheOptions,
 } from "@atomist/automation-client";
 import { spawnPromise } from "@atomist/automation-client/lib/util/child_process";
@@ -93,6 +94,7 @@ async function handleCloudBuildPubSubMessage(result: CloudBuildPubSubMessage): P
 
         try {
             const logResult = await spawnPromise("gcloud", ["builds", "log", id]);
+            logger.info(logResult.stdout);
             const log = logResult.stdout.split("\n");
             for (const l of log) {
                 progressLog.write(l);
@@ -123,6 +125,8 @@ async function handleCloudBuildPubSubMessage(result: CloudBuildPubSubMessage): P
                 description = goalEvent.descriptions?.failed;
                 break;
         }
+
+        logger.info(`Updating goal '${goalEvent.uniqueName}' with state '${state}'`);
 
         await updateGoal(context, goalEvent as any, {
             state,
