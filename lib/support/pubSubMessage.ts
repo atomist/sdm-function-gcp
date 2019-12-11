@@ -120,11 +120,12 @@ async function handleCloudBuildPubSubMessage(result: CloudBuildPubSubMessage): P
         }
 
         if (state !== SdmGoalState.in_process) {
+            const progressLog = new WriteToAllProgressLog(
+                goalEvent.name,
+                new LoggingProgressLog(goalEvent.name, "debug"),
+                await rolarAndDashboardLogFactory(context)(context, goalEvent));
+
             try {
-                const progressLog = new WriteToAllProgressLog(
-                    goalEvent.name,
-                    new LoggingProgressLog(goalEvent.name, "debug"),
-                    await rolarAndDashboardLogFactory(context)(context, goalEvent));
                 const logResult = await spawnPromise("gcloud", ["builds", "log", id]);
                 const lines = logResult.stdout.split("\n");
                 for (const line of lines) {
@@ -136,6 +137,11 @@ async function handleCloudBuildPubSubMessage(result: CloudBuildPubSubMessage): P
             } catch (e) {
                 logger.warn(`Error retrieving gcloud build logs: ${e.message}`);
             }
+
+            progressLog.write(`/--`);
+            progressLog.write(`Finish: ${formatDate(new Date(), "yyyy-mm-dd HH:MM:ss.l")}`);
+            progressLog.write("\\--");
+            await progressLog.close();
         }
 
         logger.info(`Updating goal '${goalEvent.uniqueName}' with state '${state}'`);
@@ -145,11 +151,5 @@ async function handleCloudBuildPubSubMessage(result: CloudBuildPubSubMessage): P
             description,
         });
 
-        if (state !== SdmGoalState.in_process) {
-            progressLog.write(`/--`);
-            progressLog.write(`Finish: ${formatDate(new Date(), "yyyy-mm-dd HH:MM:ss.l")}`);
-            progressLog.write("\\--");
-            await progressLog.close();
-        }
     }
 }
