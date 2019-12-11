@@ -24,10 +24,14 @@ import {
 import { spawnPromise } from "@atomist/automation-client/lib/util/child_process";
 import {
     formatDate,
+    LoggingProgressLog,
+    SdmGoalEvent,
     SdmGoalState,
     updateGoal,
+    WriteToAllProgressLog,
 } from "@atomist/sdm";
 import { DashboardDisplayProgressLog } from "@atomist/sdm-core/lib/log/DashboardDisplayProgressLog";
+import { rolarAndDashboardLogFactory } from "@atomist/sdm-core/lib/log/rolarAndDashboardLogFactory";
 import { SdmGoalsByGoalSetIdAndUniqueName } from "../typings/types";
 import { prepareConfiguration } from "./configuration";
 import { PubSubEventMessageClient } from "./messageClient";
@@ -88,20 +92,21 @@ async function handleCloudBuildPubSubMessage(result: CloudBuildPubSubMessage): P
 
     if (!!goal?.SdmGoal && !!goal?.SdmGoal[0]) {
 
-        const goalEvent = goal.SdmGoal[0];
+        const goalEvent: SdmGoalEvent = goal.SdmGoal[0] as any;
         const id = result.id;
-        const progressLog = new DashboardDisplayProgressLog(configuration, context, goalEvent as any);
+
+        const progressLog = new WriteToAllProgressLog(
+            goalEvent.name,
+            new LoggingProgressLog(goalEvent.name, "debug"),
+            await rolarAndDashboardLogFactory(context)(context, goalEvent));
 
         try {
             const logResult = await spawnPromise("gcloud", ["builds", "log", id]);
             logger.info(logResult.stdout);
-            const log = logResult.stdout.split("\n");
-            for (const l of log) {
-                progressLog.write(l);
-            }
+            progressLog.write(logResult.stdout);
             await progressLog.flush();
         } catch (e) {
-
+            logger.warn(`Error retrieving gcloud build logs`);
         }
 
         let state: SdmGoalState;
