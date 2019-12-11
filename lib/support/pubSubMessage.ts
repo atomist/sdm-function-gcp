@@ -129,8 +129,8 @@ async function handleCloudBuildPubSubMessage(result: CloudBuildPubSubMessage): P
                 const logResult = await spawnPromise("gcloud", ["builds", "log", id]);
                 const lines = logResult.stdout.split("\n");
                 for (const line of lines) {
-                    if (/^Step #1:.*$/.test(line)) {
-                        progressLog.write(line.replace(/Step #1:/, ""));
+                    if (/^Step #[1-9]*:.*$/.test(line)) {
+                        progressLog.write(line.replace(/Step #[1-9]*:/, ""));
                     }
                 }
                 await progressLog.flush();
