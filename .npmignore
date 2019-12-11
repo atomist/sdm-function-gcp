@@ -22,4 +22,3 @@
 /assets/kubectl/
 *.log
 *.txt
-*.ts
