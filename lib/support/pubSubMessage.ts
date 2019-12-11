@@ -57,28 +57,6 @@ async function handleCloudBuildPubSubMessage(result: CloudBuildPubSubMessage): P
     const configuration = await prepareConfiguration(result?.substitutions?._ATOMIST_WORKSPACE_ID, result?.substitutions?._ATOMIST_API_KEY);
 
     const graphClient = configuration.graphql.client.factory.create(result?.substitutions._ATOMIST_WORKSPACE_ID, configuration);
-    const context: HandlerContext & AutomationContextAware = {
-        graphClient,
-        messageClient: new PubSubEventMessageClient({
-            extensions: {
-                correlation_id: result.id,
-                team_id: result?.substitutions?._ATOMIST_WORKSPACE_ID,
-                team_name: result?.substitutions?._ATOMIST_WORKSPACE_ID,
-            },
-        } as any, configuration),
-        workspaceId: result?.substitutions?._ATOMIST_WORKSPACE_ID,
-        correlationId: result?.id,
-        context: {
-            correlationId: result.id,
-            invocationId: guid(),
-            name: configuration.name,
-            version: configuration.version,
-            operation: "CloudBuildEvent",
-            workspaceId: result?.substitutions?._ATOMIST_WORKSPACE_ID,
-            workspaceName: result?.substitutions?._ATOMIST_WORKSPACE_ID,
-            ts: Date.now(),
-        },
-    } as any;
 
     const goal = await graphClient.query<SdmGoalsByGoalSetIdAndUniqueName.Query, SdmGoalsByGoalSetIdAndUniqueName.Variables>({
         name: "SdmGoalsByGoalSetIdAndUniqueName",
@@ -92,21 +70,32 @@ async function handleCloudBuildPubSubMessage(result: CloudBuildPubSubMessage): P
     if (!!goal?.SdmGoal && !!goal?.SdmGoal[0]) {
 
         const goalEvent: SdmGoalEvent = goal.SdmGoal[0] as any;
+        const correlationId = goalEvent.provenance.find(p => p.name === "FulfillGoalOnRequested").correlationId;
+
+        const context: HandlerContext & AutomationContextAware = {
+            graphClient,
+            messageClient: new PubSubEventMessageClient({
+                extensions: {
+                    correlation_id: result.id,
+                    team_id: result?.substitutions?._ATOMIST_WORKSPACE_ID,
+                    team_name: result?.substitutions?._ATOMIST_WORKSPACE_ID,
+                },
+            } as any, configuration),
+            workspaceId: result?.substitutions?._ATOMIST_WORKSPACE_ID,
+            correlationId,
+            context: {
+                correlationId,
+                invocationId: guid(),
+                name: configuration.name,
+                version: configuration.version,
+                operation: "CloudBuildEvent",
+                workspaceId: result?.substitutions?._ATOMIST_WORKSPACE_ID,
+                workspaceName: result?.substitutions?._ATOMIST_WORKSPACE_ID,
+                ts: Date.now(),
+            },
+        } as any;
+
         const id = result.id;
-
-        const progressLog = new WriteToAllProgressLog(
-            goalEvent.name,
-            new LoggingProgressLog(goalEvent.name, "debug"),
-            await rolarAndDashboardLogFactory(context)(context, goalEvent));
-
-        try {
-            const logResult = await spawnPromise("gcloud", ["builds", "log", id]);
-            logger.info(logResult.stdout);
-            progressLog.write(logResult.stdout);
-            await progressLog.flush();
-        } catch (e) {
-            logger.warn(`Error retrieving gcloud build logs`);
-        }
 
         let state: SdmGoalState;
         let description: string;
@@ -128,6 +117,25 @@ async function handleCloudBuildPubSubMessage(result: CloudBuildPubSubMessage): P
                 state = SdmGoalState.failure;
                 description = goalEvent.descriptions?.failed;
                 break;
+        }
+
+        if (state !== SdmGoalState.in_process) {
+            try {
+                const progressLog = new WriteToAllProgressLog(
+                    goalEvent.name,
+                    new LoggingProgressLog(goalEvent.name, "debug"),
+                    await rolarAndDashboardLogFactory(context)(context, goalEvent));
+                const logResult = await spawnPromise("gcloud", ["builds", "log", id]);
+                const lines = logResult.stdout.split("\n");
+                for (const line of lines) {
+                    if (/^Step #1:.*$/.test(line)) {
+                        progressLog.write(line.replace(/Step #1:/, ""));
+                    }
+                }
+                await progressLog.flush();
+            } catch (e) {
+                logger.warn(`Error retrieving gcloud build logs: ${e.message}`);
+            }
         }
 
         logger.info(`Updating goal '${goalEvent.uniqueName}' with state '${state}'`);
