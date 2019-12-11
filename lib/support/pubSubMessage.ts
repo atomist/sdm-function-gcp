@@ -30,7 +30,6 @@ import {
     updateGoal,
     WriteToAllProgressLog,
 } from "@atomist/sdm";
-import { DashboardDisplayProgressLog } from "@atomist/sdm-core/lib/log/DashboardDisplayProgressLog";
 import { rolarAndDashboardLogFactory } from "@atomist/sdm-core/lib/log/rolarAndDashboardLogFactory";
 import { SdmGoalsByGoalSetIdAndUniqueName } from "../typings/types";
 import { prepareConfiguration } from "./configuration";
