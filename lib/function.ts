@@ -16,8 +16,10 @@
 
 import {
     CommandIncoming,
+    configureLogging,
     EventIncoming,
     logger,
+    PlainLogging,
 } from "@atomist/automation-client";
 import { automationClient } from "@atomist/automation-client/lib/automationClient";
 import {
@@ -39,6 +41,7 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
     const payload: CommandIncoming | EventIncoming =
         JSON.parse(Buffer.from(pubSubEvent.data, "base64").toString());
 
+    configureLogging(PlainLogging);
     logger.info(`Incoming pub/sub message: ${JSON.stringify(payload, replacer)}`);
 
     // pub/sub message that we need to handle
