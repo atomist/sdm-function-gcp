@@ -31,7 +31,6 @@ import { replacer } from "@atomist/automation-client/lib/internal/util/string";
 import "source-map-support/register";
 import { prepareConfiguration } from "./support/configuration";
 import { handlePubSubMessage } from "./support/pubSubMessage";
-import { RequestProcessMaker } from "./support/requestProcessor";
 
 interface PubSubMessage {
     data: string;
@@ -59,7 +58,7 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
     }
 
     const cfg = await prepareConfiguration(workspaceId, apiKey?.value);
-    const client = automationClient(cfg, RequestProcessMaker);
+    const client = automationClient(cfg);
     (client as any).defaultListeners.splice(1);
     await client.run();
 

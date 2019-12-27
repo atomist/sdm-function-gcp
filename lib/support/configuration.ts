@@ -24,6 +24,7 @@ import {
 import { gcpSupport } from "@atomist/sdm-pack-gcp";
 import * as _ from "lodash";
 import * as path from "path";
+import { RequestProcessMaker } from "./requestProcessor";
 
 const ProjectLoader = new CachingProjectLoader();
 
@@ -59,6 +60,7 @@ export async function prepareConfiguration(workspaceId: string, apiKey: string):
 
     baseCfg.apiKey = apiKey;
     baseCfg.workspaceIds = [workspaceId];
+    baseCfg.requestProcessorFactory = RequestProcessMaker;
 
     return loadConfiguration(Promise.resolve(baseCfg));
 }

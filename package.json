@@ -39,9 +39,9 @@
     "@atomist/sdm-pack-gcp": "^0.1.0"
   },
   "devDependencies": {
-    "@atomist/automation-client": "2.0.0-master.20191207163337",
-    "@atomist/sdm": "2.0.0-master.20191207100157",
-    "@atomist/sdm-core": "2.0.0-master.20191210154504",
+    "@atomist/automation-client": "2.0.0-master.20191226145834",
+    "@atomist/sdm": "2.0.0-master.20191226140700",
+    "@atomist/sdm-core": "2.0.0-master.20191221184944",
     "@atomist/sdm-pack-gcp": "0.1.0-master.20191208110459",
     "@google-cloud/functions-framework": "^1.3.2",
     "@types/mocha": "^5.2.7",
