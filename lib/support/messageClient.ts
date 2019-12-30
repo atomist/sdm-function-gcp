@@ -53,14 +53,9 @@ abstract class AbstractPubSubMessageClient extends AbstractMessageClient impleme
     }
 
     public async sendResponse(message: any): Promise<void> {
-        const topic = this.pubsub.topic(process.env.TOPIC);
-        const messageObject = {
-            data: {
-                message,
-            },
-        };
-        const messageBuffer = Buffer.from(JSON.stringify(messageObject), "utf8");
         try {
+            const topic = this.pubsub.topic(process.env.TOPIC);
+            const messageBuffer = Buffer.from(JSON.stringify(message), "utf8");
             await topic.publish(messageBuffer);
         } catch (err) {
             logger.error(`Error occurred sending message: ${err.message}`);
