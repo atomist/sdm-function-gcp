@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import {
-    configureLogging,
-    logger,
-    PlainLogging,
-} from "@atomist/automation-client/lib/util/logger";
 import { automationClient } from "@atomist/automation-client/lib/automationClient";
 import {
     CommandIncoming,
@@ -27,6 +22,11 @@ import {
     isEventIncoming,
 } from "@atomist/automation-client/lib/internal/transport/RequestProcessor";
 import { replacer } from "@atomist/automation-client/lib/internal/util/string";
+import {
+    configureLogging,
+    logger,
+    PlainLogging,
+} from "@atomist/automation-client/lib/util/logger";
 // tslint:disable-next-line:no-import-side-effect
 import "source-map-support/register";
 import { prepareConfiguration } from "./support/configuration";
