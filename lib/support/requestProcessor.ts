@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
+import { Configuration } from "@atomist/automation-client/lib/configuration";
 import {
     AutomationContextAware,
-    AutomationEventListener,
-    CommandIncoming,
-    Configuration,
-    EventIncoming,
-    GraphClient,
-    GraphClientFactory,
     HandlerContext,
-    MessageClient,
-} from "@atomist/automation-client";
+} from "@atomist/automation-client/lib/HandlerContext";
 import { AbstractRequestProcessor } from "@atomist/automation-client/lib/internal/transport/AbstractRequestProcessor";
 import {
+    CommandIncoming,
+    EventIncoming,
     isCommandIncoming,
     isEventIncoming,
     workspaceId,
 } from "@atomist/automation-client/lib/internal/transport/RequestProcessor";
+import { AutomationEventListener } from "@atomist/automation-client/lib/server/AutomationEventListener";
 import { AutomationServer } from "@atomist/automation-client/lib/server/AutomationServer";
+import { GraphClient } from "@atomist/automation-client/lib/spi/graph/GraphClient";
+import { GraphClientFactory } from "@atomist/automation-client/lib/spi/graph/GraphClientFactory";
+import { MessageClient } from "@atomist/automation-client/lib/spi/message/MessageClient";
 import {
     PubSubCommandMessageClient,
     PubSubEventMessageClient,

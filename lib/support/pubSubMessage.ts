@@ -16,22 +16,22 @@
 
 import {
     AutomationContextAware,
-    guid,
     HandlerContext,
-    logger,
-    QueryNoCacheOptions,
-} from "@atomist/automation-client";
+} from "@atomist/automation-client/lib/HandlerContext";
+import { guid } from "@atomist/automation-client/lib/internal/util/string";
+import { QueryNoCacheOptions } from "@atomist/automation-client/lib/spi/graph/GraphClient";
 import { spawnPromise } from "@atomist/automation-client/lib/util/child_process";
-import {
-    formatDate,
-    LoggingProgressLog,
-    SdmGoalEvent,
-    SdmGoalState,
-    updateGoal,
-    WriteToAllProgressLog,
-} from "@atomist/sdm";
+import { logger } from "@atomist/automation-client/lib/util/logger";
 import { rolarAndDashboardLogFactory } from "@atomist/sdm-core/lib/log/rolarAndDashboardLogFactory";
-import { SdmGoalsByGoalSetIdAndUniqueName } from "../typings/types";
+import { updateGoal } from "@atomist/sdm/lib/api-helper/goal/storeGoals";
+import { LoggingProgressLog } from "@atomist/sdm/lib/api-helper/log/LoggingProgressLog";
+import { WriteToAllProgressLog } from "@atomist/sdm/lib/api-helper/log/WriteToAllProgressLog";
+import { formatDate } from "@atomist/sdm/lib/api-helper/misc/dateFormat";
+import { SdmGoalEvent } from "@atomist/sdm/lib/api/goal/SdmGoalEvent";
+import {
+    SdmGoalsByGoalSetIdAndUniqueName,
+    SdmGoalState,
+} from "../typings/types";
 import { prepareConfiguration } from "./configuration";
 import { PubSubEventMessageClient } from "./messageClient";
 

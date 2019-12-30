@@ -15,14 +15,14 @@
  */
 
 import {
-    CommandIncoming,
     configureLogging,
-    EventIncoming,
     logger,
     PlainLogging,
-} from "@atomist/automation-client";
+} from "@atomist/automation-client/lib/util/logger";
 import { automationClient } from "@atomist/automation-client/lib/automationClient";
 import {
+    CommandIncoming,
+    EventIncoming,
     isCommandIncoming,
     isEventIncoming,
 } from "@atomist/automation-client/lib/internal/transport/RequestProcessor";

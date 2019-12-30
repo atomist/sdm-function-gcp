@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { Configuration } from "@atomist/automation-client";
-import { loadConfiguration } from "@atomist/automation-client/lib/configuration";
-import { CachingProjectLoader } from "@atomist/sdm";
 import {
-    configureYaml,
-    githubGoalStatusSupport,
-} from "@atomist/sdm-core";
-import { gcpSupport } from "@atomist/sdm-pack-gcp";
+    Configuration,
+    loadConfiguration,
+} from "@atomist/automation-client/lib/configuration";
+import { configureYaml } from "@atomist/sdm-core/lib/machine/yaml/configureYaml";
+import { gcpSupport } from "@atomist/sdm-pack-gcp/lib/gcp";
+import { CachingProjectLoader } from "@atomist/sdm/lib/api-helper/project/CachingProjectLoader";
 import * as _ from "lodash";
 import * as path from "path";
 import { RequestProcessMaker } from "./requestProcessor";
@@ -33,11 +32,6 @@ export async function prepareConfiguration(workspaceId: string, apiKey: string):
         "*.yaml",
         { cwd: path.resolve(__dirname, "..", "..", "..", "..", "..") });
 
-    // For now, let's set the storage bucket
-    if (!process.env.STORAGE) {
-        process.env.STORAGE = `gs://workspace-storage-${workspaceId.toLowerCase()}`;
-    }
-
     const bucket = process.env.STORAGE?.toLowerCase().replace(/gs:\/\//g, "");
 
     _.set(baseCfg, "http.enabled", false);
@@ -47,7 +41,6 @@ export async function prepareConfiguration(workspaceId: string, apiKey: string):
     _.set(baseCfg, "cluster.enabled", false);
 
     _.set(baseCfg, "sdm.extensionPacks", [
-        githubGoalStatusSupport(),
         ...(!!bucket ? [gcpSupport()] : []),
     ]);
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);

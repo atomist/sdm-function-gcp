@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
+import { Configuration } from "@atomist/automation-client/lib/configuration";
 import {
     CommandIncoming,
-    Configuration,
-    Destination,
     EventIncoming,
-    logger,
-    MessageOptions,
-} from "@atomist/automation-client";
+} from "@atomist/automation-client/lib/internal/transport/RequestProcessor";
 import { AbstractMessageClient } from "@atomist/automation-client/lib/internal/transport/websocket/WebSocketMessageClient";
+import {
+    Destination,
+    MessageOptions,
+} from "@atomist/automation-client/lib/spi/message/MessageClient";
+import { logger } from "@atomist/automation-client/lib/util/logger";
 import { Source } from "@atomist/automation-client/src/lib/internal/transport/RequestProcessor";
 import { SlackMessage } from "@atomist/slack-messages";
 import { PubSub } from "@google-cloud/pubsub";
+import { Error } from "tslint/lib/error";
 
 export interface PubSubPublisher {
     publish(message: any): Promise<void>;
