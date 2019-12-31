@@ -21,11 +21,12 @@ import {
 import { configureYaml } from "@atomist/sdm-core/lib/machine/yaml/configureYaml";
 import { gcpSupport } from "@atomist/sdm-pack-gcp/lib/gcp";
 import { CachingProjectLoader } from "@atomist/sdm/lib/api-helper/project/CachingProjectLoader";
+import { GitHubLazyProjectLoader } from "@atomist/sdm/lib/api-helper/project/GitHubLazyProjectLoader";
 import * as _ from "lodash";
 import * as path from "path";
 import { RequestProcessMaker } from "./requestProcessor";
 
-const ProjectLoader = new CachingProjectLoader();
+const ProjectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
 
 export async function prepareConfiguration(workspaceId: string, apiKey: string): Promise<Configuration> {
     const baseCfg = await configureYaml(
