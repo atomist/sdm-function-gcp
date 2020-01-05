@@ -18,6 +18,7 @@ import {
     Configuration,
     loadConfiguration,
 } from "@atomist/automation-client/lib/configuration";
+import { CompressionMethod } from "@atomist/sdm-core/lib/goal/cache/CompressingGoalCache";
 import { configureYaml } from "@atomist/sdm-core/lib/machine/yaml/configureYaml";
 import { gcpSupport } from "@atomist/sdm-pack-gcp/lib/gcp";
 import { CachingProjectLoader } from "@atomist/sdm/lib/api-helper/project/CachingProjectLoader";
@@ -42,7 +43,7 @@ export async function prepareConfiguration(workspaceId: string, apiKey: string):
     _.set(baseCfg, "cluster.enabled", false);
 
     _.set(baseCfg, "sdm.extensionPacks", [
-        ...(!!bucket ? [gcpSupport()] : []),
+        ...(!!bucket ? [gcpSupport({ compression: CompressionMethod.ZIP})] : []),
     ]);
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
     _.set(baseCfg, "sdm.goal.timeout", 1200000);
