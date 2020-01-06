@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { automationClient } from "@atomist/automation-client/lib/automationClient";
+import {
+    AutomationClient,
+    automationClient,
+} from "@atomist/automation-client/lib/automationClient";
+import { automationClientInstance } from "@atomist/automation-client/lib/globals";
 import {
     CommandIncoming,
     EventIncoming,
@@ -57,10 +61,18 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
         workspaceId = payload.extensions.team_id;
     }
 
-    const cfg = await prepareConfiguration(workspaceId, apiKey?.value);
-    const client = automationClient(cfg);
-    (client as any).defaultListeners.splice(1);
-    await client.run();
+    let client: AutomationClient;
+    if (!automationClientInstance()) {
+        logger.info(`Starting new cold automation client`);
+        const cfg = await prepareConfiguration(workspaceId, apiKey?.value);
+        client = automationClient(cfg);
+        (client as any).defaultListeners.splice(1);
+        await client.run();
+    } else {
+        logger.info(`Re-using hot automation client`);
+        client = automationClientInstance();
+        client.automations.opts.apiKey = apiKey?.value;
+    }
 
     if (isCommandIncoming(payload)) {
         try {
