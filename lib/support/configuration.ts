@@ -55,6 +55,7 @@ export async function prepareConfiguration(workspaceId: string, apiKey: string):
 
     baseCfg.apiKey = apiKey;
     baseCfg.workspaceIds = [workspaceId];
+    baseCfg.policy = "ephemeral";
     baseCfg.requestProcessorFactory = RequestProcessMaker;
 
     return loadConfiguration(Promise.resolve(baseCfg));
