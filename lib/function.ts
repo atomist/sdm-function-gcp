@@ -15,8 +15,8 @@
  */
 
 import {
-    AutomationClient,
     automationClient,
+    AutomationClient,
 } from "@atomist/automation-client/lib/automationClient";
 import { automationClientInstance } from "@atomist/automation-client/lib/globals";
 import {
