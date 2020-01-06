@@ -58,5 +58,10 @@ export async function prepareConfiguration(workspaceId: string, apiKey: string):
     baseCfg.policy = "ephemeral";
     baseCfg.requestProcessorFactory = RequestProcessMaker;
 
+    const graphqlEndpoint = process.env.GRAPHQL_ENDPOINT;
+    if (!!graphqlEndpoint) {
+        baseCfg.endpoints.graphql = `${graphqlEndpoint}/team`;
+    }
+
     return loadConfiguration(Promise.resolve(baseCfg));
 }
