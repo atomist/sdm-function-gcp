@@ -59,7 +59,7 @@ export async function prepareConfiguration(workspaceId: string, apiKey: string):
     baseCfg.workspaceIds = [workspaceId];
     baseCfg.policy = "ephemeral";
     baseCfg.requestProcessorFactory = RequestProcessMaker;
-    
+
     if (!!graphqlEndpoint) {
         _.set(baseCfg, "endpoints.graphql", `${graphqlEndpoint}/team`);
     }
