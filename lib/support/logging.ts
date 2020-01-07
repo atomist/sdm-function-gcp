@@ -29,9 +29,9 @@ import { redactLog } from "@atomist/automation-client/lib/util/redact";
 import { DashboardDisplayProgressLog } from "@atomist/sdm-core/lib/log/DashboardDisplayProgressLog";
 import { SdmGoalEvent } from "@atomist/sdm/lib/api/goal/SdmGoalEvent";
 import { ProgressLog } from "@atomist/sdm/lib/spi/log/ProgressLog";
+import { MESSAGE } from "triple-beam";
 import * as winston from "winston";
 import * as Transport from "winston-transport";
-import { MESSAGE } from "triple-beam";
 
 class RolarTransport extends Transport {
 
