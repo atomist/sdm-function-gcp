@@ -72,6 +72,8 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
         client.automations.opts.apiKey = apiKey?.value;
     }
 
+    // await SkillTransport.start(payload, client.automations.opts);
+
     if (isCommandIncoming(payload)) {
         try {
             await new Promise<void>((resolve, reject) => {
@@ -84,6 +86,8 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
             });
         } catch (e) {
             logger.error(`Processing command failed: ${e.message}`);
+        } finally {
+            // await SkillTransport.stop();
         }
     } else if (isEventIncoming(payload)) {
         try {
@@ -97,6 +101,8 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
             });
         } catch (e) {
             logger.error(`Processing event failed: ${e.message}`);
+        } finally {
+            // await SkillTransport.stop();
         }
     }
 };

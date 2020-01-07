@@ -1,9 +1,0 @@
-query SdmGoalsByGoalSetIdAndUniqueName(
-  $goalSetId: [String!]
-  $uniqueName: [String]
-) {
-  SdmGoal(goalSetId: $goalSetId, uniqueName: $uniqueName) {
-    ...SdmGoalWithPushFields
-    ...SdmGoalRepo
-  }
-}

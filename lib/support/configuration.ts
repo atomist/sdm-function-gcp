@@ -41,11 +41,12 @@ export async function prepareConfiguration(workspaceId: string, apiKey: string):
     _.set(baseCfg, "ws.enabled", false);
     _.set(baseCfg, "logging.level", "debug");
     _.set(baseCfg, "logging.color", false);
+    // _.set(baseCfg, "logging.custom.transports", [SkillTransport]);
     _.set(baseCfg, "cluster.enabled", false);
     _.set(baseCfg, "applicationEvents.enabled", false);
 
     _.set(baseCfg, "sdm.extensionPacks", [
-        ...(!!bucket ? [gcpSupport({ compression: CompressionMethod.ZIP})] : []),
+        ...(!!bucket ? [gcpSupport({ compression: CompressionMethod.ZIP })] : []),
     ]);
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
     _.set(baseCfg, "sdm.goal.timeout", 1200000);
