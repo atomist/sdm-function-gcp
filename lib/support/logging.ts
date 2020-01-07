@@ -36,9 +36,9 @@ import * as Transport from "winston-transport";
 class RolarTransport extends Transport {
 
     private logInstance: ProgressLog;
-    private messages = [];
+    private messages: string[] = [];
 
-    public format = winston.format.combine(
+    public format: any = winston.format.combine(
        winston.format(redactLog)(),
         winston.format.timestamp(),
         winston.format.splat(),
@@ -86,7 +86,7 @@ class RolarTransport extends Transport {
         this.logInstance = undefined;
     }
 
-    public log(info, callback) {
+    public log(info: any, callback: () => void): void {
         setImmediate(() => this.emit("logged", info));
         if (!!this.logInstance) {
             if (this.messages.length > 0) {

@@ -81,7 +81,7 @@ export class PubSubEventMessageClient extends AbstractPubSubMessageClient {
     constructor(protected readonly request: EventIncoming,
                 protected readonly configuration: Configuration) {
         super(request, request.extensions.correlation_id,
-            { id: request.extensions.team_id, name: request.extensions.team_name }, null, configuration);
+            { id: request.extensions.team_id, name: request.extensions.team_name }, undefined, configuration);
     }
 
     protected async doSend(msg: string | SlackMessage,
