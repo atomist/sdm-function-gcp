@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// tslint:disable-next-line:no-import-side-effect
+import "source-map-support/register";
+
 import {
     automationClient,
     AutomationClient,
@@ -31,10 +34,7 @@ import {
     logger,
     PlainLogging,
 } from "@atomist/automation-client/lib/util/logger";
-// tslint:disable-next-line:no-import-side-effect
-import "source-map-support/register";
 import { prepareConfiguration } from "./support/configuration";
-import { handlePubSubMessage } from "./support/pubSubMessage";
 
 interface PubSubMessage {
     data: string;
@@ -44,13 +44,13 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
     const payload: CommandIncoming | EventIncoming =
         JSON.parse(Buffer.from(pubSubEvent.data, "base64").toString());
 
-    configureLogging(PlainLogging);
-    logger.info(`Incoming pub/sub message: ${JSON.stringify(payload, replacer)}`);
+    let client: AutomationClient = automationClientInstance();
 
-    // pub/sub message that we need to handle
-    if (!isCommandIncoming(payload) && !isEventIncoming(payload)) {
-        return handlePubSubMessage(payload);
+    if (!client) {
+        configureLogging(PlainLogging);
     }
+
+    logger.info(`Incoming pub/sub message: ${JSON.stringify(payload, replacer)}`);
 
     const apiKey = payload?.secrets?.find(s => s.uri === "atomist://api-key");
 
@@ -61,8 +61,7 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
         workspaceId = payload.extensions.team_id;
     }
 
-    let client: AutomationClient;
-    if (!automationClientInstance()) {
+    if (!client) {
         logger.info(`Starting new cold automation client`);
         const cfg = await prepareConfiguration(workspaceId, apiKey?.value);
         client = automationClient(cfg);
@@ -70,7 +69,6 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
         await client.run();
     } else {
         logger.info(`Re-using hot automation client`);
-        client = automationClientInstance();
         client.automations.opts.apiKey = apiKey?.value;
     }
 
