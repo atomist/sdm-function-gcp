@@ -31,16 +31,18 @@ const ProjectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
 
 export async function prepareConfiguration(workspaceId: string, apiKey: string): Promise<Configuration> {
     const baseCfg = await configureYaml(
-        "*.yaml",
+        "atomist.{yml,yaml}",
         { cwd: path.resolve(__dirname, "..", "..", "..", "..", "..") });
 
     const bucket = process.env.STORAGE?.toLowerCase().replace(/gs:\/\//g, "");
+    const graphqlEndpoint = process.env.GRAPHQL_ENDPOINT;
 
     _.set(baseCfg, "http.enabled", false);
     _.set(baseCfg, "ws.enabled", false);
     _.set(baseCfg, "logging.level", "debug");
     _.set(baseCfg, "logging.color", false);
     _.set(baseCfg, "cluster.enabled", false);
+    _.set(baseCfg, "applicationEvents.enabled", false);
 
     _.set(baseCfg, "sdm.extensionPacks", [
         ...(!!bucket ? [gcpSupport({ compression: CompressionMethod.ZIP})] : []),
@@ -57,8 +59,7 @@ export async function prepareConfiguration(workspaceId: string, apiKey: string):
     baseCfg.workspaceIds = [workspaceId];
     baseCfg.policy = "ephemeral";
     baseCfg.requestProcessorFactory = RequestProcessMaker;
-
-    const graphqlEndpoint = process.env.GRAPHQL_ENDPOINT;
+    
     if (!!graphqlEndpoint) {
         _.set(baseCfg, "endpoints.graphql", `${graphqlEndpoint}/team`);
     }
