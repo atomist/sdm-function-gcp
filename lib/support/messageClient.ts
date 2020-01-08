@@ -20,6 +20,7 @@ import {
     EventIncoming,
 } from "@atomist/automation-client/lib/internal/transport/RequestProcessor";
 import { AbstractMessageClient } from "@atomist/automation-client/lib/internal/transport/websocket/WebSocketMessageClient";
+import { replacer } from "@atomist/automation-client/lib/internal/util/string";
 import {
     Destination,
     MessageOptions,
@@ -53,6 +54,7 @@ abstract class AbstractPubSubMessageClient extends AbstractMessageClient impleme
 
     public async sendResponse(message: any): Promise<void> {
         try {
+            logger.debug(`Sending message '${JSON.stringify(message, replacer)}'`);
             const topic = this.pubsub.topic(process.env.TOPIC);
             const messageBuffer = Buffer.from(JSON.stringify(message), "utf8");
             await topic.publish(messageBuffer);
