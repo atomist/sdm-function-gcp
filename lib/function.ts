@@ -40,7 +40,7 @@ export interface PubSubMessage {
     data: string;
 }
 
-export const sdm = async (pubSubEvent: PubSubMessage, options: any) => {
+export const sdm = async (pubSubEvent: PubSubMessage, context: any, options: any) => {
     const payload: CommandIncoming | EventIncoming =
         JSON.parse(Buffer.from(pubSubEvent.data, "base64").toString());
 
