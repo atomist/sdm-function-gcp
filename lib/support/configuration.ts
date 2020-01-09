@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
     Configuration,
     loadConfiguration,
@@ -23,6 +22,7 @@ import { configureYaml } from "@atomist/sdm-core/lib/machine/yaml/configureYaml"
 import { gcpSupport } from "@atomist/sdm-pack-gcp/lib/gcp";
 import { CachingProjectLoader } from "@atomist/sdm/lib/api-helper/project/CachingProjectLoader";
 import { GitHubLazyProjectLoader } from "@atomist/sdm/lib/api-helper/project/GitHubLazyProjectLoader";
+import * as findUp from "find-up";
 import * as _ from "lodash";
 import * as path from "path";
 import { RequestProcessMaker } from "./requestProcessor";
@@ -30,9 +30,11 @@ import { RequestProcessMaker } from "./requestProcessor";
 const ProjectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
 
 export async function prepareConfiguration(workspaceId: string, apiKey: string): Promise<Configuration> {
+    const cwd = findUp.sync(["atomist.yaml", "atomist.yml"] as any, { cwd: __dirname, type: "file" });
+
     const baseCfg = await configureYaml(
         "atomist.{yml,yaml}",
-        { cwd: path.resolve(__dirname, "..", "..", "..", "..", "..") });
+        { cwd: path.dirname(cwd) });
 
     const bucket = process.env.STORAGE?.toLowerCase().replace(/gs:\/\//g, "");
     const graphqlEndpoint = process.env.GRAPHQL_ENDPOINT;
