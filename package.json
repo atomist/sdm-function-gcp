@@ -21,7 +21,6 @@
     "sdm",
     "aspect"
   ],
-  "bin": "bin/start.js",
   "main": "dist/index.js",
   "types": "./index.d.ts",
   "dependencies": {
