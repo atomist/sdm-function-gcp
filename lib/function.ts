@@ -36,11 +36,11 @@ import {
 } from "@atomist/automation-client/lib/util/logger";
 import { prepareConfiguration } from "./support/configuration";
 
-interface PubSubMessage {
+export interface PubSubMessage {
     data: string;
 }
 
-export const sdm = async (pubSubEvent: PubSubMessage) => {
+export const sdm = async (pubSubEvent: PubSubMessage, options: any) => {
     const payload: CommandIncoming | EventIncoming =
         JSON.parse(Buffer.from(pubSubEvent.data, "base64").toString());
 
@@ -63,7 +63,7 @@ export const sdm = async (pubSubEvent: PubSubMessage) => {
 
     if (!client) {
         logger.info(`Starting new cold automation client`);
-        const cfg = await prepareConfiguration(workspaceId, apiKey?.value);
+        const cfg = await prepareConfiguration(workspaceId, apiKey?.value, options);
         client = automationClient(cfg);
         (client as any).defaultListeners.splice(1);
         await client.run();

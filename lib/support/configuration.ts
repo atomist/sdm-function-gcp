@@ -19,7 +19,13 @@ import {
     loadConfiguration,
 } from "@atomist/automation-client/lib/configuration";
 import { CompressionMethod } from "@atomist/sdm-core/lib/goal/cache/CompressingGoalCache";
-import { configureYaml } from "@atomist/sdm-core/lib/machine/yaml/configureYaml";
+import {
+    CommandMaker,
+    configureYaml,
+    EventMaker,
+} from "@atomist/sdm-core/lib/machine/yaml/configureYaml";
+import { GoalMaker } from "@atomist/sdm-core/lib/machine/yaml/mapGoals";
+import { PushTestMaker } from "@atomist/sdm-core/lib/machine/yaml/mapPushTests";
 import { gcpSupport } from "@atomist/sdm-pack-gcp/lib/gcp";
 import { CachingProjectLoader } from "@atomist/sdm/lib/api-helper/project/CachingProjectLoader";
 import { GitHubLazyProjectLoader } from "@atomist/sdm/lib/api-helper/project/GitHubLazyProjectLoader";
@@ -30,12 +36,33 @@ import { RequestProcessMaker } from "./requestProcessor";
 
 const ProjectLoader = new GitHubLazyProjectLoader(new CachingProjectLoader());
 
-export async function prepareConfiguration(workspaceId: string, apiKey: string): Promise<Configuration> {
+export async function prepareConfiguration(workspaceId: string,
+                                           apiKey: string,
+                                           options?: {
+                                               commands?: Record<string, CommandMaker>,
+                                               events?: Record<string, EventMaker>,
+                                               goals?: Record<string, GoalMaker>,
+                                               tests?: Record<string, PushTestMaker>,
+                                           }): Promise<Configuration> {
     const cwd = findUp.sync(["atomist.yaml", "atomist.yml"] as any, { cwd: __dirname, type: "file" });
 
-    const baseCfg = await configureYaml(
+    const baseCfg = await configureYaml<any>(
         "atomist.{yml,yaml}",
-        { cwd: path.dirname(cwd) });
+        {
+            cwd: path.dirname(cwd),
+            makers: {
+                commands: options?.commands,
+                events: options?.events,
+                goals: options?.goals,
+                tests: options?.tests,
+            },
+            patterns: {
+                commands: !!options?.commands ? [] : undefined,
+                events: !!options?.events ? [] : undefined,
+                goals: !!options?.goals ? [] : undefined,
+                tests: !!options?.goals ? [] : undefined,
+            },
+        });
 
     const bucket = process.env.STORAGE?.toLowerCase().replace(/gs:\/\//g, "");
     const graphqlEndpoint = process.env.GRAPHQL_ENDPOINT;
