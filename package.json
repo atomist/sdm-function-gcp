@@ -25,9 +25,10 @@
   "types": "./index.d.ts",
   "dependencies": {
     "@atomist/slack-messages": "^1.1.1",
-    "@google-cloud/pubsub": "^1.1.5",
+    "@google-cloud/pubsub": "1.1.5",
     "find-up": "^4.1.0",
     "lodash": "^4.17.15",
+    "semver": "^6.3.0",
     "source-map-support": "^0.5.16",
     "triple-beam": "^1.3.0",
     "winston": "^3.2.1",
@@ -42,7 +43,7 @@
   "devDependencies": {
     "@atomist/automation-client": "2.0.0-remove-index.20200107155146",
     "@atomist/sdm": "2.0.0-remove-index.20200105193510",
-    "@atomist/sdm-core": "2.0.0-remove-index.20200109200013",
+    "@atomist/sdm-core": "2.0.0-remove-index.20200110224540",
     "@atomist/sdm-pack-gcp": "0.1.0-remove-index.20200105224159",
     "@google-cloud/functions-framework": "^1.3.2",
     "@types/mocha": "^5.2.7",

@@ -21,6 +21,7 @@ import {
 import { CompressionMethod } from "@atomist/sdm-core/lib/goal/cache/CompressingGoalCache";
 import {
     CommandMaker,
+    ConfigurationMaker,
     configureYaml,
     EventMaker,
 } from "@atomist/sdm-core/lib/machine/yaml/configureYaml";
@@ -43,6 +44,7 @@ export async function prepareConfiguration(workspaceId: string,
                                                events?: Record<string, EventMaker>,
                                                goals?: Record<string, GoalMaker>,
                                                tests?: Record<string, PushTestMaker>,
+                                               configurations?: Record<string, ConfigurationMaker>,
                                            }): Promise<Configuration> {
     const cwd = findUp.sync(["atomist.yaml", "atomist.yml"] as any, { cwd: __dirname, type: "file" });
 
@@ -55,12 +57,14 @@ export async function prepareConfiguration(workspaceId: string,
                 events: options?.events,
                 goals: options?.goals,
                 tests: options?.tests,
+                configurations: options?.configurations,
             },
             patterns: {
                 commands: !!options?.commands ? [] : undefined,
                 events: !!options?.events ? [] : undefined,
                 goals: !!options?.goals ? [] : undefined,
                 tests: !!options?.goals ? [] : undefined,
+                configurations: !!options?.configurations ? [] : undefined,
             },
         });
 
