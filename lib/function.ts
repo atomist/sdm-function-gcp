@@ -109,6 +109,6 @@ export const entryPoint = async (pubSubEvent: PubSubMessage, context: any, optio
 
 export const sdm = async (pubSubEvent: PubSubMessage, context: any) => {
     return entryPoint(pubSubEvent, context, {});
-}
+};
 
 export const eventhandler = sdm;
