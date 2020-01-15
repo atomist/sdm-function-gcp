@@ -32,9 +32,9 @@ import { replacer } from "@atomist/automation-client/lib/internal/util/string";
 import {
     configureLogging,
     logger,
-    PlainLogging,
 } from "@atomist/automation-client/lib/util/logger";
 import { prepareConfiguration } from "./support/configuration";
+import { ConsoleTransport } from "./support/logging";
 
 export interface PubSubMessage {
     data: string;
@@ -42,17 +42,25 @@ export interface PubSubMessage {
 
 export const entryPoint = async (pubSubEvent: PubSubMessage, context: any, options: any) => {
 
-    // Delete the two undocumented console streams to make the logging use the correct logging levels in GCF
-    delete (console as any)._stderr;
-    delete (console as any)._stdout;
-
     const payload: CommandIncoming | EventIncoming =
         JSON.parse(Buffer.from(pubSubEvent.data, "base64").toString());
 
     let client: AutomationClient = automationClientInstance();
 
     if (!client) {
-        configureLogging(PlainLogging);
+        configureLogging({
+            console: {
+                redirect: false,
+                enabled: false,
+            },
+            file: {
+                enabled: false,
+            },
+            redact: true,
+            callsites: false,
+            color: false,
+            custom: [new ConsoleTransport()],
+        });
     }
 
     logger.info(`Incoming pub/sub message: ${JSON.stringify(payload, replacer)}`);

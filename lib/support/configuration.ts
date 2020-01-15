@@ -75,9 +75,6 @@ export async function prepareConfiguration(workspaceId: string,
 
     _.set(baseCfg, "http.enabled", false);
     _.set(baseCfg, "ws.enabled", false);
-    _.set(baseCfg, "logging.level", "debug");
-    _.set(baseCfg, "logging.color", false);
-    // _.set(baseCfg, "logging.custom.transports", [SkillTransport]);
     _.set(baseCfg, "cluster.enabled", false);
     _.set(baseCfg, "applicationEvents.enabled", false);
 
@@ -101,5 +98,7 @@ export async function prepareConfiguration(workspaceId: string,
         _.set(baseCfg, "endpoints.graphql", `${graphqlEndpoint}/team`);
     }
 
-    return loadConfiguration(Promise.resolve(baseCfg));
+    const cfg = await loadConfiguration(Promise.resolve(baseCfg));
+    cfg.logging = undefined;
+    return cfg;
 }

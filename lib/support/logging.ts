@@ -29,9 +29,48 @@ import { redactLog } from "@atomist/automation-client/lib/util/redact";
 import { DashboardDisplayProgressLog } from "@atomist/sdm-core/lib/log/DashboardDisplayProgressLog";
 import { SdmGoalEvent } from "@atomist/sdm/lib/api/goal/SdmGoalEvent";
 import { ProgressLog } from "@atomist/sdm/lib/spi/log/ProgressLog";
-import { MESSAGE } from "triple-beam";
+import {
+    LEVEL,
+    MESSAGE,
+} from "triple-beam";
 import * as winston from "winston";
 import * as Transport from "winston-transport";
+
+export class ConsoleTransport extends Transport {
+
+    public level = "debug";
+
+    public format: any = winston.format.combine(
+        winston.format(redactLog)(),
+        winston.format.timestamp(),
+        winston.format.splat(),
+        winston.format.printf(clientFormat),
+        winston.format.uncolorize(),
+    );
+
+    public log(info: any, callback: () => void): void {
+        setImmediate(() => this.emit("logged", info));
+
+        const level = info[LEVEL];
+        const msg = info[MESSAGE];
+
+        switch (level) {
+            case "error":
+                console.error(msg);
+                break;
+            case "warn":
+                console.warn(msg);
+                break;
+            default:
+                console.log(msg);
+                break;
+        }
+
+        if (callback) {
+            callback();
+        }
+    }
+}
 
 class RolarTransport extends Transport {
 
@@ -39,7 +78,7 @@ class RolarTransport extends Transport {
     private messages: string[] = [];
 
     public format: any = winston.format.combine(
-       winston.format(redactLog)(),
+        winston.format(redactLog)(),
         winston.format.timestamp(),
         winston.format.splat(),
         winston.format.printf(clientFormat),
@@ -90,8 +129,8 @@ class RolarTransport extends Transport {
         setImmediate(() => this.emit("logged", info));
         if (!!this.logInstance) {
             if (this.messages.length > 0) {
-                 this.logInstance.write(this.messages.join("\n"));
-                 this.messages = [];
+                this.logInstance.write(this.messages.join("\n"));
+                this.messages = [];
             }
             this.logInstance.write(info[MESSAGE]);
         } else {
