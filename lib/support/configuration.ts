@@ -101,9 +101,5 @@ export async function prepareConfiguration(workspaceId: string,
         _.set(baseCfg, "endpoints.graphql", `${graphqlEndpoint}/team`);
     }
 
-    // Delete the two undocumented console streams to make the logging use the correct logging levels in GCF
-    delete (console as any)._stderr;
-    delete (console as any)._stdout;
-
     return loadConfiguration(Promise.resolve(baseCfg));
 }

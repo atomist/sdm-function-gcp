@@ -41,6 +41,11 @@ export interface PubSubMessage {
 }
 
 export const entryPoint = async (pubSubEvent: PubSubMessage, context: any, options: any) => {
+
+    // Delete the two undocumented console streams to make the logging use the correct logging levels in GCF
+    delete (console as any)._stderr;
+    delete (console as any)._stdout;
+
     const payload: CommandIncoming | EventIncoming =
         JSON.parse(Buffer.from(pubSubEvent.data, "base64").toString());
 
