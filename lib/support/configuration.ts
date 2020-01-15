@@ -24,6 +24,7 @@ import {
     ConfigurationMaker,
     configureYaml,
     EventMaker,
+    Target,
 } from "@atomist/sdm-core/lib/machine/yaml/configureYaml";
 import { GoalMaker } from "@atomist/sdm-core/lib/machine/yaml/mapGoals";
 import { PushTestMaker } from "@atomist/sdm-core/lib/machine/yaml/mapPushTests";
@@ -66,6 +67,7 @@ export async function prepareConfiguration(workspaceId: string,
                 tests: !!options?.goals ? [] : undefined,
                 configurations: !!options?.configurations ? [] : undefined,
             },
+            target: Target.Skill,
         });
 
     const bucket = process.env.STORAGE?.toLowerCase().replace(/gs:\/\//g, "");
