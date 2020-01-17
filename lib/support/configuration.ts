@@ -28,6 +28,7 @@ import {
 } from "@atomist/sdm-core/lib/machine/yaml/configureYaml";
 import { GoalMaker } from "@atomist/sdm-core/lib/machine/yaml/mapGoals";
 import { PushTestMaker } from "@atomist/sdm-core/lib/machine/yaml/mapPushTests";
+import { githubGoalStatusSupport } from "@atomist/sdm-core/lib/pack/github-goal-status/github";
 import { gcpSupport } from "@atomist/sdm-pack-gcp/lib/gcp";
 import { CachingProjectLoader } from "@atomist/sdm/lib/api-helper/project/CachingProjectLoader";
 import { GitHubLazyProjectLoader } from "@atomist/sdm/lib/api-helper/project/GitHubLazyProjectLoader";
@@ -79,6 +80,7 @@ export async function prepareConfiguration(workspaceId: string,
     _.set(baseCfg, "applicationEvents.enabled", false);
 
     _.set(baseCfg, "sdm.extensionPacks", [
+        githubGoalStatusSupport(),
         ...(!!bucket ? [gcpSupport({ compression: CompressionMethod.ZIP })] : []),
     ]);
     _.set(baseCfg, "sdm.projectLoader", ProjectLoader);
