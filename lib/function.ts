@@ -85,8 +85,6 @@ export const entryPoint = async (pubSubEvent: PubSubMessage, context: any, optio
         client.automations.opts.apiKey = apiKey?.value;
     }
 
-    // await SkillTransport.start(payload, client.automations.opts);
-
     if (isCommandIncoming(payload)) {
         try {
             await new Promise<void>((resolve, reject) => {
@@ -99,8 +97,6 @@ export const entryPoint = async (pubSubEvent: PubSubMessage, context: any, optio
             });
         } catch (e) {
             logger.error(`Processing command failed: ${e.message}`);
-        } finally {
-            // await SkillTransport.stop();
         }
     } else if (isEventIncoming(payload)) {
         try {
@@ -114,8 +110,6 @@ export const entryPoint = async (pubSubEvent: PubSubMessage, context: any, optio
             });
         } catch (e) {
             logger.error(`Processing event failed: ${e.message}`);
-        } finally {
-            // await SkillTransport.stop();
         }
     }
 };

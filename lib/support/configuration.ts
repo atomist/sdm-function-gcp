@@ -49,7 +49,7 @@ export async function prepareConfiguration(workspaceId: string,
                                                tests?: Record<string, PushTestMaker>,
                                                configurations?: Record<string, ConfigurationMaker>,
                                            }): Promise<Configuration> {
-    const cwd = findUp.sync(["atomist.yaml", "atomist.yml"] as any, { cwd: __dirname, type: "file" });
+    const cwd = findUp.sync("atomist.yaml", { cwd: __dirname, type: "file" });
 
     const baseCfg = await configureYaml<any>(
         "atomist.{yml,yaml}",
@@ -74,6 +74,8 @@ export async function prepareConfiguration(workspaceId: string,
 
     const bucket = process.env.STORAGE?.toLowerCase().replace(/gs:\/\//g, "");
     const graphqlEndpoint = process.env.GRAPHQL_ENDPOINT;
+    const dashboardUrl = process.env.DASHBOARD_URL;
+    const rolarUrl = process.env.ROLAR_URL;
 
     _.set(baseCfg, "http.enabled", false);
     _.set(baseCfg, "ws.enabled", false);
@@ -96,6 +98,8 @@ export async function prepareConfiguration(workspaceId: string,
         bucket,
         path: !bucket ? "/tmp/sdm" : undefined,
     });
+    _.set(baseCfg, "sdm.dashboard.url", dashboardUrl);
+    _.set(baseCfg, "sdm.rolar.url", rolarUrl);
 
     baseCfg.apiKey = apiKey;
     baseCfg.workspaceIds = [workspaceId];
