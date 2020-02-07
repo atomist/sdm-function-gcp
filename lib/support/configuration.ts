@@ -98,7 +98,7 @@ export async function prepareConfiguration(workspaceId: string,
         bucket,
         path: !bucket ? "/tmp/sdm" : undefined,
     });
-    _.set(baseCfg, "sdm.dashboard.url", dashboardUrl);
+    _.set(baseCfg, "sdm.rolar.webAppUrl", dashboardUrl);
     _.set(baseCfg, "sdm.rolar.url", rolarUrl);
 
     baseCfg.apiKey = apiKey;
