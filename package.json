@@ -41,10 +41,9 @@
     "@atomist/sdm-pack-gcp": "^0.1.0"
   },
   "devDependencies": {
-    "@atomist/automation-client": "2.0.0-master.20200205110916",
-    "@atomist/sdm": "2.0.0-master.20200204153359",
-    "@atomist/sdm-core": "2.0.0-master.20200205112304",
-    "@atomist/sdm-pack-gcp": "0.1.0-master.20200205105926",
+    "@atomist/automation-client": "2.0.0-master.20200205130055",
+    "@atomist/sdm": "2.0.0-skill-output.20200208174656",
+    "@atomist/sdm-core": "2.0.0-skill-output.20200210125350",
     "@google-cloud/functions-framework": "^1.3.2",
     "@types/mocha": "^5.2.7",
     "@types/power-assert": "^1.5.0",

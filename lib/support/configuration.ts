@@ -28,9 +28,9 @@ import {
 } from "@atomist/sdm-core/lib/machine/yaml/configureYaml";
 import { GoalMaker } from "@atomist/sdm-core/lib/machine/yaml/mapGoals";
 import { PushTestMaker } from "@atomist/sdm-core/lib/machine/yaml/mapPushTests";
+import { gcpSupport } from "@atomist/sdm-core/lib/pack/gcp";
 import { githubGoalStatusSupport } from "@atomist/sdm-core/lib/pack/github-goal-status/github";
 import { goalStateSupport } from "@atomist/sdm-core/lib/pack/goal-state/goalState";
-import { gcpSupport } from "@atomist/sdm-pack-gcp/lib/gcp";
 import { CachingProjectLoader } from "@atomist/sdm/lib/api-helper/project/CachingProjectLoader";
 import { GitHubLazyProjectLoader } from "@atomist/sdm/lib/api-helper/project/GitHubLazyProjectLoader";
 import * as findUp from "find-up";
