@@ -26,8 +26,8 @@ import {
     logger,
 } from "@atomist/automation-client/lib/util/logger";
 import { redactLog } from "@atomist/automation-client/lib/util/redact";
-import { DashboardDisplayProgressLog } from "@atomist/sdm-core/lib/log/DashboardDisplayProgressLog";
 import { SdmGoalEvent } from "@atomist/sdm/lib/api/goal/SdmGoalEvent";
+import { DashboardDisplayProgressLog } from "@atomist/sdm/lib/core/log/DashboardDisplayProgressLog";
 import { ProgressLog } from "@atomist/sdm/lib/spi/log/ProgressLog";
 import {
     LEVEL,

@@ -18,21 +18,21 @@ import {
     Configuration,
     loadConfiguration,
 } from "@atomist/automation-client/lib/configuration";
-import { CompressionMethod } from "@atomist/sdm-core/lib/goal/cache/CompressingGoalCache";
+import { CachingProjectLoader } from "@atomist/sdm/lib/api-helper/project/CachingProjectLoader";
+import { GitHubLazyProjectLoader } from "@atomist/sdm/lib/api-helper/project/GitHubLazyProjectLoader";
+import { CompressionMethod } from "@atomist/sdm/lib/core/goal/cache/CompressingGoalCache";
 import {
     CommandMaker,
     ConfigurationMaker,
     configureYaml,
     EventMaker,
     Target,
-} from "@atomist/sdm-core/lib/machine/yaml/configureYaml";
-import { GoalMaker } from "@atomist/sdm-core/lib/machine/yaml/mapGoals";
-import { PushTestMaker } from "@atomist/sdm-core/lib/machine/yaml/mapPushTests";
-import { gcpSupport } from "@atomist/sdm-core/lib/pack/gcp";
-import { githubGoalStatusSupport } from "@atomist/sdm-core/lib/pack/github-goal-status/github";
-import { goalStateSupport } from "@atomist/sdm-core/lib/pack/goal-state/goalState";
-import { CachingProjectLoader } from "@atomist/sdm/lib/api-helper/project/CachingProjectLoader";
-import { GitHubLazyProjectLoader } from "@atomist/sdm/lib/api-helper/project/GitHubLazyProjectLoader";
+} from "@atomist/sdm/lib/core/machine/yaml/configureYaml";
+import { GoalMaker } from "@atomist/sdm/lib/core/machine/yaml/mapGoals";
+import { PushTestMaker } from "@atomist/sdm/lib/core/machine/yaml/mapPushTests";
+import { gcpSupport } from "@atomist/sdm/lib/core/pack/gcp";
+import { githubGoalStatusSupport } from "@atomist/sdm/lib/core/pack/github-goal-status/github";
+import { goalStateSupport } from "@atomist/sdm/lib/core/pack/goal-state/goalState";
 import * as findUp from "find-up";
 import * as _ from "lodash";
 import * as path from "path";
