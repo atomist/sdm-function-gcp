@@ -27,6 +27,7 @@ import {
     isEventIncoming,
     workspaceId,
 } from "@atomist/automation-client/lib/internal/transport/RequestProcessor";
+import { HandlerResponse } from "@atomist/automation-client/lib/internal/transport/websocket/WebSocketMessageClient";
 import { AutomationEventListener } from "@atomist/automation-client/lib/server/AutomationEventListener";
 import { AutomationServer } from "@atomist/automation-client/lib/server/AutomationServer";
 import { GraphClient } from "@atomist/automation-client/lib/spi/graph/GraphClient";
@@ -69,7 +70,14 @@ class PubSubRequestProcessor extends AbstractRequestProcessor {
     }
 
     protected sendStatusMessage(payload: any, ctx: HandlerContext & AutomationContextAware): Promise<any> {
-        return this.publisher.publish(payload);
+        const response = payload as HandlerResponse;
+        if (!!response?.status) {
+            const status = response.status;
+            if (!status.hasOwnProperty("visibility")) {
+                (status as any).visibility = "hidden";
+            }
+        }
+        return this.publisher.publish(response);
     }
 
 }
