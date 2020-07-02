@@ -38,9 +38,15 @@ import { ConsoleTransport } from "./support/logging";
 
 export interface PubSubMessage {
     data: string;
+    attributes: any;
 }
 
 export const entryPoint = async (pubSubEvent: PubSubMessage, context: any, options: any) => {
+    const attributes = {
+        ...(pubSubEvent.attributes || {}),
+        eventId: context.eventId,
+    };
+    console.log(`atm:attributes=${JSON.stringify(attributes)}`);
 
     const payload: CommandIncoming | EventIncoming =
         JSON.parse(Buffer.from(pubSubEvent.data, "base64").toString());
