@@ -30,9 +30,9 @@ import {
 } from "@atomist/sdm/lib/core/machine/yaml/configureYaml";
 import { GoalMaker } from "@atomist/sdm/lib/core/machine/yaml/mapGoals";
 import { PushTestMaker } from "@atomist/sdm/lib/core/machine/yaml/mapPushTests";
-import { gcpSupport } from "@atomist/sdm/lib/core/pack/gcp";
-import { githubGoalStatusSupport } from "@atomist/sdm/lib/core/pack/github-goal-status/github";
-import { goalStateSupport } from "@atomist/sdm/lib/core/pack/goal-state/goalState";
+import { gcpSupport } from "@atomist/sdm/lib/pack/gcp";
+import { githubGoalStatusSupport } from "@atomist/sdm/lib/pack/github-goal-status";
+import { goalStateSupport } from "@atomist/sdm/lib/pack/goal-state";
 import * as findUp from "find-up";
 import * as _ from "lodash";
 import * as path from "path";
